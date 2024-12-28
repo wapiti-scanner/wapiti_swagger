@@ -1,0 +1,10 @@
+[MASTER]
+ignore-paths=tests/.*
+ignore=myvenv
+
+[MESSAGES CONTROL]
+disable=C0114,C0116  # Disable docstring warnings globally
+
+[FORMAT]
+max-line-length=120  # Adjust max line length
+
