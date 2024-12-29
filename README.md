@@ -1,5 +1,8 @@
 # **Wapiti Swagger Parser**
 
+![License](https://img.shields.io/github/license/wapiti-scanner/wapiti_swagger)
+![Python Versions](https://img.shields.io/badge/python-3.8%20|%203.9%20|%203.10%20|%203.11%20|%203.12-blue)
+
 ## **Project Description**
 
 The **Wapiti Swagger Parser** is a Python library designed to parse Swagger (OpenAPI) specifications and extract the necessary information to generate valid HTTP requests. It focuses on providing a clean, programmatic interface for analyzing Swagger files and creating request templates without relying on external tools for OpenAPI processing.
