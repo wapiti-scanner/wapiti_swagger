@@ -15,10 +15,10 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e .
-          pip install "pylint==2.12.2" "pylint-ignore==2022.1025" "PyYAML>=6.0"
+          pip install "pylint==2.12.2"  "PyYAML>=6.0"
       - name: Pylint
         run: |
-          pylint-ignore --rcfile=.pylintrc .
+          pylint .
 
   build:
     runs-on: ubuntu-22.04
