@@ -1,5 +1,6 @@
 # **Wapiti Swagger Parser**
 
+![Version](https://img.shields.io/pypi/v/wapiti-swagger?label=version&logo=PyPI&logoColor=white&color=blue)
 ![License](https://img.shields.io/github/license/wapiti-scanner/wapiti_swagger)
 ![Python Versions](https://img.shields.io/badge/python-3.8%20|%203.9%20|%203.10%20|%203.11%20|%203.12-blue)
 
@@ -14,6 +15,12 @@ This library is particularly useful for scenarios where only the request generat
 - Custom API tooling.
 
 The library is lightweight, relying only on Python's built-in `json` library and `PyYAML` for file parsing, and it avoids heavy dependencies on larger OpenAPI frameworks.
+
+---
+
+## **Installation**
+
+`pip install wapiti-swagger`
 
 ---
 
