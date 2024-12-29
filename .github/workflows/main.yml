@@ -18,7 +18,7 @@ jobs:
           pip install "pylint==2.12.2"  "PyYAML>=6.0"
       - name: Pylint
         run: |
-          pylint .
+          pylint wapiti_swagger/
 
   build:
     runs-on: ubuntu-22.04
