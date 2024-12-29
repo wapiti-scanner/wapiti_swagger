@@ -20,7 +20,7 @@ classifiers = [
     "Topic :: Internet :: WWW/HTTP",
 ]
 dependencies = ["PyYAML>=6.0"]  # Add any other required dependencies here
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 
 [tool.setuptools.packages.find]
 where = ["wapiti_swagger"]
