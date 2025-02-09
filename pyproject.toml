@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "wapiti-swagger"
-version = "0.1.0"
+version = "0.1.1"
 description = "A library for parsing and generating request bodies from Swagger/OpenAPI specifications."
 readme = "README.md"
 license = {text = "MIT"}
@@ -23,5 +23,6 @@ dependencies = ["PyYAML>=6.0"]  # Add any other required dependencies here
 requires-python = ">=3.9"
 
 [tool.setuptools.packages.find]
-where = ["wapiti_swagger"]
+where = ["."]
+exclude = ["tests*"]
 
