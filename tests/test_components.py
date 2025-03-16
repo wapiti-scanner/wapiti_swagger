@@ -1,4 +1,8 @@
-from wapiti_swagger.parser import extract_request_body, parse_components
+import json
+import os
+from tempfile import NamedTemporaryFile
+
+from wapiti_swagger.parser import extract_request_body, parse_components, parse
 
 components_data = {
     "schemas": {
@@ -21,7 +25,6 @@ def test_parse_components():
     assert "BaseSchema" in resolved["schemas"]
     assert "DerivedSchema" in resolved["schemas"]
     assert resolved["schemas"]["DerivedSchema"] == resolved["schemas"]["BaseSchema"]
-
 
 
 reduced_swagger_with_custom_type = {
@@ -78,3 +81,102 @@ def test_extract_request_body_with_custom_type():
     param_text_json = parameters[1]
     assert param_text_json.media_type == "text/json"
     assert param_text_json.custom_type == "AmaApprovalBehaviorInput"
+
+
+openapi_2_definitions_dict = {
+    "paths": {
+        "/pet/{petId}/uploadImage": {
+            "post": {
+                "tags": [
+                    "pet"
+                ],
+                "summary": "uploads an image",
+                "description": "",
+                "operationId": "uploadFile",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "petId",
+                        "in": "path",
+                        "description": "ID of pet to update",
+                        "required": True,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "additionalMetadata",
+                        "in": "formData",
+                        "description": "Additional data to pass to server",
+                        "required": False,
+                        "type": "string"
+                    },
+                    {
+                        "name": "file",
+                        "in": "formData",
+                        "description": "file to upload",
+                        "required": False,
+                        "type": "file"
+                    }
+                ],
+            }
+        }
+    },
+    "definitions": {
+        "ApiResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
+
+def test_swagger_2_0_definitions():
+    with NamedTemporaryFile("w", suffix=".json", delete=False) as file_obj:
+        json.dump(openapi_2_definitions_dict, file_obj)
+        filename = file_obj.name
+
+    parsed_swagger = parse(file_obj.name)
+    assert parsed_swagger.components == {
+        'schemas': {
+            'ApiResponse': {
+                'type': 'object',
+                'properties': {
+                    'code': {
+                        'type': 'integer',
+                        'format': 'int32'
+                    },
+                    'type': {'type': 'string'},
+                    'message': {'type': 'string'}
+                }
+            }
+        }
+    }
+    os.unlink(filename)
+
+
+
+
+
+
+
+
+
+
+
+
+

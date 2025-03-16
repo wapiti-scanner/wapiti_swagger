@@ -36,6 +36,8 @@ def parse(file_path: str) -> ParsedSwagger:
     components = {}
     if "components" in data:
         components = parse_components(data["components"])
+    elif "definitions" in data:
+        components = parse_components({"schemas": data["definitions"]})
 
     return ParsedSwagger(metadata=metadata, requests=requests, components=components)
 
@@ -289,8 +291,9 @@ def generate_request_body_from_schema(
 
         return resolved_body
 
+    schema_type = schema.get("type")
     # Handle object schemas
-    if schema.get("type") == "object":
+    if schema_type == "object":
         result = {}
         properties = schema.get("properties", {})
         required_fields = schema.get("required", [])
@@ -305,23 +308,23 @@ def generate_request_body_from_schema(
         return result
 
     # Handle array schemas
-    if schema.get("type") == "array":
+    if schema_type == "array":
         items = schema.get("items", {})
         return [generate_request_body_from_schema(items, resolved_components, visited_refs)]
 
     # Handle enums
-    if schema.get("type") == "string" and "enum" in schema:
+    if schema_type == "string" and "enum" in schema:
         return schema["enum"][0]  # Return the first enum value as an example
 
     # Handle scalar types
-    if schema.get("type") == "integer":
+    if schema_type == "integer":
         return schema.get("default", 0)
-    if schema.get("type") == "number":
+    if schema_type == "number":
         return schema.get("default", 0.0)
-    if schema.get("type") == "boolean":
+    if schema_type == "boolean":
         return schema.get("default", False)
-    if schema.get("type") == "string":
+    if schema_type == "string":
         return schema.get("default", "example")
 
     # Fallback for unsupported types
-    return f"<{schema.get('type', 'unknown')}>"
+    return f"<{schema_type or 'unknown'}>"
