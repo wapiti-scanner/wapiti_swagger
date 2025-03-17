@@ -85,15 +85,15 @@ COMPLEX_SWAGGER = """
 }
 """
 
-@pytest.fixture
+@pytest.fixture(name="complex_swagger")
 def complex_swagger_file(tmp_path):
     swagger_path = tmp_path / "complex_swagger.json"
     swagger_path.write_text(COMPLEX_SWAGGER)
     return swagger_path
 
-def test_generate_request_body_with_complex_object(complex_swagger_file):
+def test_generate_request_body_with_complex_object(complex_swagger):
     # Parse the Swagger file
-    parsed = parse(str(complex_swagger_file))
+    parsed = parse(str(complex_swagger))
 
     # Find the POST request for /api/ComplexObject
     request = next(req for req in parsed.requests if req.path == "/api/ComplexObject" and req.method == "POST")
@@ -208,15 +208,15 @@ HIERARCHY_SWAGGER = """
 }
 """
 
-@pytest.fixture
+@pytest.fixture(name="hierarchy_file")
 def hierarchy_swagger_file(tmp_path):
     swagger_path = tmp_path / "hierarchy_swagger.json"
     swagger_path.write_text(HIERARCHY_SWAGGER)
     return swagger_path
 
-def test_generate_request_body_with_hierarchy(hierarchy_swagger_file):
+def test_generate_request_body_with_hierarchy(hierarchy_file):
     # Parse the Swagger file
-    parsed = parse(str(hierarchy_swagger_file))
+    parsed = parse(str(hierarchy_file))
 
     # Find the POST request for /api/ParentObject
     request = next(req for req in parsed.requests if req.path == "/api/ParentObject" and req.method == "POST")

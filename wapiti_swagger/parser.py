@@ -291,7 +291,7 @@ def generate_request_body_from_schema(
 
         return resolved_body
 
-    schema_type = schema.get("type")
+    schema_type = schema.get("type", "object")
     # Handle object schemas
     if schema_type == "object":
         result = {}

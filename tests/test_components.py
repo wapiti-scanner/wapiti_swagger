@@ -18,6 +18,7 @@ components_data = {
     }
 }
 
+
 def test_parse_components():
     resolved = parse_components(components_data)
 
@@ -66,7 +67,8 @@ reduced_swagger_with_custom_type = {
 
 def test_extract_request_body_with_custom_type():
     # Extract request body parameters
-    request_body = reduced_swagger_with_custom_type["paths"]["/api/AmaApproval/report/userbehavior"]["post"]["requestBody"]
+    request_body = reduced_swagger_with_custom_type["paths"]["/api/AmaApproval/report/userbehavior"]["post"][
+        "requestBody"]
     parameters = extract_request_body(request_body)
 
     # Assertions for parameters
@@ -145,6 +147,7 @@ openapi_2_definitions_dict = {
     }
 }
 
+
 def test_swagger_2_0_definitions():
     with NamedTemporaryFile("w", suffix=".json", delete=False) as file_obj:
         json.dump(openapi_2_definitions_dict, file_obj)
@@ -169,14 +172,83 @@ def test_swagger_2_0_definitions():
     os.unlink(filename)
 
 
+openapi_2_definitions_missing_type = {
+    "paths": {
+        "/ftpusers/{name}": {
+            "put": {
+                "tags": [
+                    "FtpUsers"
+                ],
+                "summary": "Update FTP user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "name",
+                        "description": "FTP user name",
+                        "required": True,
+                        "type": "string",
+                        "x-example": "exampleuser"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "FTP User data",
+                        "required": True,
+                        "schema": {
+                            "$ref": "#/definitions/FtpUserUpdateRequest"
+                        }
+                    }
+                ]
+            }
+        },
+    },
+    "definitions": {
+        "FtpUserUpdateRequest": {
+            # Object has properties but type "object" is not explicit
+            "properties": {
+                "name": {
+                    "description": "User name in the system",
+                    "type": "string",
+                    "example": "exampleuser"
+                },
+                "password": {
+                    "description": "User password",
+                    "type": "string"
+                },
+            }
+        },
+    }
+}
 
 
+def test_swagger_2_0_definitions_missing_type():
+    with NamedTemporaryFile("w", suffix=".json", delete=False) as file_obj:
+        json.dump(openapi_2_definitions_missing_type, file_obj)
+        filename = file_obj.name
 
-
-
-
-
-
-
-
-
+    parsed_swagger = parse(file_obj.name)
+    assert parsed_swagger.components == {
+        'schemas': {
+            "FtpUserUpdateRequest": {
+                # Object has properties but type "object" is not explicit
+                "properties": {
+                    "name": {
+                        "description": "User name in the system",
+                        "type": "string",
+                        "example": "exampleuser"
+                    },
+                    "password": {
+                        "description": "User password",
+                        "type": "string"
+                    },
+                }
+            },
+        }
+    }
+    os.unlink(filename)

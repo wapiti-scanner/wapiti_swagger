@@ -4,3 +4,7 @@ release:
 	
 test:
 	pytest tests/
+
+style:
+	pip install -e .
+	pylint wapiti_swagger/ tests/
