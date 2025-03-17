@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional, Union
 
 import yaml
 
-from .models import Parameter, ParsedSwagger, SwaggerRequest
+from wapiti_swagger.models import Parameter, ParsedSwagger, SwaggerRequest
 
 
 # Define a custom type alias for request body generation
@@ -48,11 +48,24 @@ def extract_metadata(data: dict) -> Dict[str, Any]:
     :param data: The Swagger/OpenAPI specification as a dictionary.
     :return: A dictionary containing metadata such as host, basePath, schemes, servers, etc.
     """
-    metadata = {"host": data.get("host"), "basePath": data.get("basePath"), "schemes": data.get("schemes")}
+    metadata = {
+        "host": data.get("host"),
+        "basePath": data.get("basePath"),
+        "schemes": data.get("schemes"),
+        "servers": [],
+    }
 
     # OpenAPI 3.x
-    if "servers" in data:
-        metadata["servers"] = [server.get("url") for server in data["servers"]]
+    for server in data.get("servers", []):
+        if isinstance(server, dict) and "url" in server:
+            url = server["url"]
+            for variable_name, properties in server.get("variables", {}).items():
+                if "default" in properties:
+                    url = url.replace(
+                        f"{{{variable_name}}}", properties["default"]
+                    )
+
+            metadata["servers"].append(url)
 
     # Remove None values
     return {key: value for key, value in metadata.items() if value is not None}
