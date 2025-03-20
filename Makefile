@@ -3,7 +3,7 @@ release:
 	python -m build --sdist --wheel
 	
 test:
-	pytest tests/
+	pytest -vv tests/
 
 style:
 	pip install -e .

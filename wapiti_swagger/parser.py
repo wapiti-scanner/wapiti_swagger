@@ -337,13 +337,13 @@ def generate_request_body_from_schema(
 
     # Handle scalar types
     if schema_type == "integer":
-        return schema.get("default", 0)
+        return schema.get("default", 1)
     if schema_type == "number":
-        return schema.get("default", 0.0)
+        return schema.get("default", 1.0)
     if schema_type == "boolean":
-        return schema.get("default", False)
+        return schema.get("default", True)
     if schema_type == "string":
-        return schema.get("default", "example")
+        return schema.get("default", "default")
 
     # Fallback for unsupported types
     return f"<{schema_type or 'unknown'}>"

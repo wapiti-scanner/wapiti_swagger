@@ -106,15 +106,15 @@ def test_generate_request_body_with_complex_object(complex_swagger):
 
     # Expected output
     expected_body = {
-        "id": 0,
-        "name": "example",
-        "tags": ["example"],
+        "id": 1,
+        "name": "default",
+        "tags": ["default"],
         "children": [
             {
                 "type": "TypeA",
                 "details": {
-                    "description": "example",
-                    "value": 0.0
+                    "description": "default",
+                    "value": 1.0
                 }
             }
         ]
@@ -229,16 +229,16 @@ def test_generate_request_body_with_hierarchy(hierarchy_file):
 
     # Expected output
     expected_body = {
-        "parentId": 0,
-        "parentName": "example",
+        "parentId": 1,
+        "parentName": "default",
         "children": [
             {
-                "childId": 0,
-                "childName": "example",
+                "childId": 1,
+                "childName": "default",
                 "grandchildren": [
                     {
-                        "grandchildId": 0,
-                        "grandchildName": "example"
+                        "grandchildId": 1,
+                        "grandchildName": "default"
                     }
                 ]
             }
