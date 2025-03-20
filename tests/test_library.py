@@ -153,3 +153,45 @@ def test_extract_requests():
     assert param_timestamp.custom_type == "Timestamp"
     assert param_timestamp.param_format == ""
     assert param_timestamp.nullable is False
+
+
+def test_extract_path_level_parameters():
+    data = {
+        "paths": {
+            "/v1.0/{accountId}/flavors": {
+                "parameters": [
+                    {
+                        "name": "accountId",
+                        "required": True,
+                        "in": "path",
+                        "type": "string",
+                        "description": "The account ID of the owner of the specified instance.\n"
+                    },
+                    {
+                        "name": "belongsTo",
+                        "required": False,
+                        "in": "query",
+                        "type": "string",
+                        "description": "Test.\n"
+                    }
+                ],
+                "get": {
+                    "operationId": "getFlavors",
+                    "summary": "List flavors",
+                    "description": "Lists information for all available flavors.\n",
+                    "produces": [
+                        "application/json"
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "200 response"
+                        }
+                    }
+                }
+            },
+        }
+    }
+
+    extracted_requests = extract_requests(data)
+    assert len(extracted_requests) == 1
+    assert {param.name for param in extracted_requests[0].parameters} == {"accountId", "belongsTo"}
