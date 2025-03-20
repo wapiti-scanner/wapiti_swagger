@@ -23,6 +23,60 @@ def test_extract_parameter_with_inline_schema():
     assert extracted_param.default is None
 
 
+def test_extract_enum_parameter():
+    param = {
+        "name": "status",
+        "in": "query",
+        "description": "Status values that need to be considered for filter",
+        "required": True,
+        "type": "array",
+        "items": {
+            "type": "string",
+            "enum": [
+                "available",
+                "pending",
+                "sold"
+            ],
+            "default": "available"
+        },
+        "collectionFormat": "multi"
+    }
+
+    extracted_param = extract_parameter(param)
+    assert extracted_param.default == "available"
+
+
+def test_extract_default_int_parameter():
+    data = {
+        "name": "ids",
+        "in": "query",
+        "required": False,
+        "type": "array",
+        "items": {
+            "type": "integer",
+            "default": 42
+        }
+    }
+    parameter = extract_parameter(data)
+    assert parameter.default == 42
+
+
+def test_extract_default_int_parameter_openapi3():
+    data = {
+        "name": "ids",
+        "in": "query",
+        "required": False,
+        "schema": {
+            "type": "array",
+            "items": {
+                "type": "integer",
+                "default": 42
+            }
+        }
+    }
+    parameter = extract_parameter(data)
+    assert parameter.default == 42
+
 
 reduced_swagger_data = {
     "paths": {

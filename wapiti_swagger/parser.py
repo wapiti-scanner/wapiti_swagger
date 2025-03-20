@@ -215,7 +215,7 @@ def extract_parameter(param: dict) -> Parameter:
     location = param.get("in", "")
     description = param.get("description", "")
     required = param.get("required", False)
-    schema = param.get("schema", {})  # Raw schema
+    schema = param.get("schema", param)  # Default to param (for Swagger 2.0)
     custom_type = None
 
     # Extract custom type from $ref
@@ -223,15 +223,21 @@ def extract_parameter(param: dict) -> Parameter:
         ref = schema["$ref"]
         custom_type = ref.split("/")[-1]
 
+    default_value = schema.get("default", param.get("default", None))
+    param_type = schema.get("type", "")
+    if param_type == "array" and "items" in schema:
+        items = schema["items"]
+        default_value = items.get("default", default_value) or items.get("enum", [None])[0]
+
     return Parameter(
         name=name,
         description=description,
         location=location,
         required=required,
-        param_type=schema.get("type", ""),
+        param_type=param_type,
         param_format=schema.get("format", ""),
         nullable=schema.get("nullable", False),
-        default=schema.get("default", None),
+        default=default_value,
         custom_type=custom_type,
         schema=schema  # Store raw schema
     )
