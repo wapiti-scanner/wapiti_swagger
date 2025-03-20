@@ -77,20 +77,18 @@ def extract_requests(data: dict):
         raise ValueError("Invalid Swagger file: 'paths' section is missing.")
 
     requests = []
-    parameters = []
 
     for path, methods in data["paths"].items():
         # Some parameters in common for all methods may be put at the same level that generic methods
-        parameters = [extract_parameter(param) for param in methods.get("parameters", [])]
+        path_level_parameters = [extract_parameter(param) for param in methods.get("parameters", [])]
         for method, details in methods.items():
             if method.lower() in {"get", "post", "put", "delete", "patch", "options", "head"}:
-                for param in details.get("parameters", []):
-                    parameters.append(extract_parameter(param))
+                method_level_parameters = [extract_parameter(param) for param in details.get("parameters", [])]
 
                 # Handle requestBody
                 if "requestBody" in details:
                     request_body_params = extract_request_body(details["requestBody"])
-                    parameters.extend(request_body_params)
+                    method_level_parameters.extend(request_body_params)
 
                 # Extract consumes
                 consumes = details.get("consumes", [])
@@ -99,7 +97,7 @@ def extract_requests(data: dict):
                     path=path,
                     method=method.upper(),
                     summary=details.get("summary", ""),
-                    parameters=parameters,
+                    parameters=path_level_parameters + method_level_parameters,
                     consumes=consumes,
                 ))
     return requests

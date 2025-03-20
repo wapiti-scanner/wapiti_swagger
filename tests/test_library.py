@@ -187,11 +187,33 @@ def test_extract_path_level_parameters():
                             "description": "200 response"
                         }
                     }
-                }
+                },
+                "post": {
+                    "operationId": "postFlavors",
+                    "produces": [
+                        "application/json"
+                    ],
+                    "parameters": [
+                        {
+                            "name": "flavors",
+                            "in": "query",
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "200 response"
+                        }
+                    }
+                },
             },
         }
     }
 
     extracted_requests = extract_requests(data)
-    assert len(extracted_requests) == 1
+    assert len(extracted_requests) == 2
     assert {param.name for param in extracted_requests[0].parameters} == {"accountId", "belongsTo"}
+    assert {param.name for param in extracted_requests[1].parameters} == {"accountId", "belongsTo", "flavors"}
