@@ -2,6 +2,7 @@
 import json
 import logging
 from typing import Any, Dict, List, Optional, Union
+from uuid import uuid4
 
 import yaml
 
@@ -277,6 +278,22 @@ def extract_request_body(request_body: dict):
     return parameters
 
 
+default_string_values = {
+    "date": "2024-01-01",
+    "date-time": "2023-03-03T20:35:34.32",
+    "email": "wapiti2021@mailinator.com",
+    "uuid": str(uuid4()),
+    "hostname": "google.com",
+    "ipv4": "8.8.8.8",
+    "ipv6": "2a00:1450:4007:818::200e",
+    "uri": "https://example.com/api",
+    "url": "https://example.com",
+    "byte": "d2FwaXRp",
+    "binary": "hello there",
+    "password": "Letm3in_"
+}
+
+
 # pylint: disable=too-many-return-statements,too-many-branches
 def generate_request_body_from_schema(
     schema: dict, resolved_components: dict, visited_refs: set = None
@@ -342,7 +359,8 @@ def generate_request_body_from_schema(
     if schema_type == "boolean":
         return schema.get("default", True)
     if schema_type == "string":
-        return schema.get("default", "default")
+        string_format = schema.get("format")
+        return schema.get("default", default_string_values.get(string_format, "default"))
 
     # Fallback for unsupported types
     return f"<{schema_type or 'unknown'}>"

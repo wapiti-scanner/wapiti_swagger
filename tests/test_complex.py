@@ -247,3 +247,74 @@ def test_generate_request_body_with_hierarchy(hierarchy_file):
 
     # Validate the generated request body
     assert request_body == expected_body
+
+
+STRING_FORMAT_OPENAPI = """
+{
+    "openapi": "3.0.1",
+    "servers": [
+        {
+            "url": "https://fake.openapi.fr/"
+        }
+    ],
+    "paths": {
+        "/v1/yolo": {
+            "put": {
+                "tags": [
+                    "Alarms"
+                ],
+                "operationId": "Alarms_Update",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AlarmPutModel"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+     },
+    "components": {
+        "schemas": {
+            "AlarmPutModel": {
+                "required": [
+                    "alarmState"
+                ],
+                "type": "object",
+                "properties": {
+                    "confirmingDateTime": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            }
+        }
+    }
+}
+"""
+
+@pytest.fixture(name="openapi_string_format")
+def openapi_string_format_file(tmp_path):
+    swagger_path = tmp_path / "openapi_string_format.json"
+    swagger_path.write_text(STRING_FORMAT_OPENAPI)
+    return swagger_path
+
+def test_generate_request_body_string_format(openapi_string_format):
+    # Parse the Swagger file
+    parsed = parse(str(openapi_string_format))
+
+    # Find the POST request for /api/ParentObject
+    request = parsed.requests[0]
+
+    # Generate the request body for the ParentObject schema
+    request_body = generate_request_body_from_schema(
+        schema=request.parameters[0].schema,
+        resolved_components=parsed.components
+    )
+
+    # Validate the generated request body
+    assert request_body == {'confirmingDateTime': '2023-03-03T20:35:34.32'}
