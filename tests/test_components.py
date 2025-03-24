@@ -155,6 +155,7 @@ def test_swagger_2_0_definitions():
 
     parsed_swagger = parse(file_obj.name)
     assert parsed_swagger.components == {
+        'parameters': {},
         'schemas': {
             'ApiResponse': {
                 'type': 'object',
@@ -234,6 +235,7 @@ def test_swagger_2_0_definitions_missing_type():
 
     parsed_swagger = parse(file_obj.name)
     assert parsed_swagger.components == {
+        'parameters': {},
         'schemas': {
             "FtpUserUpdateRequest": {
                 # Object has properties but type "object" is not explicit

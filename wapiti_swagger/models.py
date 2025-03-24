@@ -1,55 +1,30 @@
 """Module containing structs to handle Swagger (openAPI) elements"""
-from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
 
-# pylint: disable=too-few-public-methods
+from dataclasses import dataclass, field
+
+
+# pylint: disable=too-many-instance-attributes
+@dataclass
 class Parameter:
     """Represents a parameter expected by an API endpoint"""
-    # pylint: disable=too-many-instance-attributes,too-many-arguments,too-many-positional-arguments
-    def __init__(
-        self,
-        name: str,
-        description: str = "",
-        location: str = "",
-        required: bool = False,
-        param_type: str = "",
-        param_format: str = "",
-        nullable: bool = False,
-        default=None,
-        media_type: str = None,
-        custom_type: str = None,
-        schema: dict = None,  # Add schema attribute
-    ):
-        """
-        Initialize a parameter object with its relevant details.
-
-        :param schema: The full schema definition for the parameter.
-        """
-        self.name = name
-        self.description = description
-        self.location = location
-        self.required = required
-        self.param_type = param_type
-        self.param_format = param_format
-        self.nullable = nullable
-        self.default = default
-        self.media_type = media_type
-        self.custom_type = custom_type
-        self.schema = schema or {}
-
-    def __repr__(self):
-        return (
-            f"<Parameter {self.name} ({self.location}) required={self.required} "
-            f"type={self.param_type} format={self.param_format} nullable={self.nullable} "
-            f"default={self.default} media_type={self.media_type} custom_type={self.custom_type}>"
-        )
-
+    name: str
+    description: str = ""
+    location: str = ""
+    required: bool = False
+    param_type: str = ""
+    param_format: str = ""
+    nullable: bool = False
+    default: Any = None
+    media_type: Optional[str] = None
+    custom_type: Optional[str] = None
+    schema: dict = field(default_factory=dict)  # Use `field` to avoid mutable default
 
 
 class SwaggerRequest:
     """Represents HTTP request information required to use an API endpoint"""
-    # pylint: disable=too-many-instance-attributes,too-many-arguments,too-many-positional-arguments
+    # pylint: disable=too-many-instance-attributes,too-many-arguments,too-many-positional-arguments,too-few-public-methods
     def __init__(
             self,
             path: str,

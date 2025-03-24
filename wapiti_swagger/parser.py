@@ -19,7 +19,6 @@ def parse(file_path: str) -> ParsedSwagger:
 
     :param file_path: Path to the Swagger/OpenAPI file.
     :return: A ParsedSwagger object with extracted requests and resolved components.
-    :raises ValueError: If the file format is unsupported or required keys are missing.
     """
     with open(file_path, 'r', encoding='utf-8') as f:
         if file_path.endswith('.json'):
@@ -34,13 +33,21 @@ def parse(file_path: str) -> ParsedSwagger:
 
     metadata = extract_metadata(data)
     requests = extract_requests(data)
+
+    # Handle both OpenAPI 3.x and Swagger 2.0
     components = {}
     if "components" in data:
         components = parse_components(data["components"])
-    elif "definitions" in data:
-        components = parse_components({"schemas": data["definitions"]})
+    elif "definitions" in data or "parameters" in data:
+        components = parse_components(
+            {
+                "schemas": data.get("definitions", {}),
+                "parameters": data.get("parameters", {})
+            }
+        )
 
     return ParsedSwagger(metadata=metadata, requests=requests, components=components)
+
 
 def extract_metadata(data: dict) -> Dict[str, Any]:
     """
@@ -72,12 +79,17 @@ def extract_metadata(data: dict) -> Dict[str, Any]:
     return {key: value for key, value in metadata.items() if value is not None}
 
 
+def replace_with_global_parameters(parameters: List[Parameter], global_params: Dict[str, Parameter]) -> List[Parameter]:
+    """Replace parameters in list with their real version from the global parameters list when possible."""
+    return [global_params[param.custom_type] if param.custom_type in global_params else param for param in parameters]
+
 def extract_requests(data: dict):
     """Extracts HTTP requests from the Swagger specification."""
     if "paths" not in data:
         raise ValueError("Invalid Swagger file: 'paths' section is missing.")
 
     requests = []
+    global_parameters = {name: extract_parameter(value) for name, value in data.get("parameters", {}).items()}
 
     for path, methods in data["paths"].items():
         # Some parameters in common for all methods may be put at the same level that generic methods
@@ -94,11 +106,16 @@ def extract_requests(data: dict):
                 # Extract consumes
                 consumes = details.get("consumes", [])
 
+                fixed_parameters = replace_with_global_parameters(
+                    path_level_parameters + method_level_parameters,
+                    global_parameters,
+                )
+
                 requests.append(SwaggerRequest(
                     path=path,
                     method=method.upper(),
                     summary=details.get("summary", ""),
-                    parameters=path_level_parameters + method_level_parameters,
+                    parameters=fixed_parameters,
                     consumes=consumes,
                 ))
     return requests
@@ -186,11 +203,12 @@ def resolve_schema(
 def parse_components(components: dict) -> dict:
     """
     Parses and resolves all $ref entries in the components section of the Swagger file.
+    Handles OpenAPI 3.0 `components` and Swagger 2.0 `definitions` + `parameters`.
 
     :param components: The raw components section from the Swagger file.
     :return: A dictionary with resolved components.
     """
-    resolved_components = {}
+    resolved_components = {"schemas": {}, "parameters": {}}
     resolved_cache = {}  # Shared cache for all schemas
 
     for key, value in components.items():
