@@ -3,26 +3,33 @@ requires = ["setuptools>=42", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "wapiti-swagger"
+name = "wapiti_swagger"
 version = "0.1.9"
 description = "A library for parsing and generating request bodies from Swagger/OpenAPI specifications."
 readme = "README.md"
-license = {text = "MIT"}
+license = { text = "MIT" }
 authors = [
     {name="Nicolas Surribas", email="nicolas.surribas@gmail.com"}
 ]
 keywords = ["swagger", "openapi", "wapiti", "parser"]
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Topic :: Software Development :: Libraries",
     "Topic :: Internet :: WWW/HTTP",
 ]
-dependencies = ["PyYAML>=6.0"]  # Add any other required dependencies here
+dependencies = ["PyYAML>=6.0"]
 requires-python = ">=3.9"
+
+[project.optional-dependencies]
+dev = [
+    "build",
+    "twine",
+    "black",
+    "pylint",
+    "pytest"
+]
 
 [tool.setuptools.packages.find]
 where = ["."]
 exclude = ["tests*"]
-

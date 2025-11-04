@@ -1,0 +1,13 @@
+Source: wapiti-swagger
+Section: python
+Priority: optional
+Maintainer: Nicolas Surribas <nicolas.surribas@gmail.com>
+Build-Depends: debhelper-compat (= 13), python3, python3-setuptools
+Standards-Version: 4.6.2
+Homepage: https://github.com/wapiti-scanner/wapiti_swagger
+Rules-Requires-Root: no
+
+Package: python3-wapiti-swagger
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends}, python3-yaml (>= 6.0)
+Description: Python library designed to parse Swagger (OpenAPI) specifications and extract the necessary information to generate valid HTTP requests
