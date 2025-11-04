@@ -1,0 +1,8 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: wapiti-swagger
+Source: https://github.com/wapiti-scanner/wapiti-swagger
+
+Files: *
+Copyright: 2024-2025 Nicolas Surribas
+License: MIT
+
