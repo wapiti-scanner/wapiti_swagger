@@ -254,3 +254,48 @@ def test_swagger_2_0_definitions_missing_type():
         }
     }
     os.unlink(filename)
+
+
+def test_parse_components_breaks_circular_references():
+    components = {
+        "schemas": {
+            "Node": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string"},
+                    "parent": {"$ref": "#/components/schemas/Node"},
+                },
+            }
+        }
+    }
+
+    resolved = parse_components(components)
+    node = resolved["schemas"]["Node"]
+    # The first level of self-reference is inlined, the next one is dropped
+    assert node["properties"]["parent"] == {"type": "object", "properties": {"name": {"type": "string"}}}
+
+
+def test_parse_components_reuses_cached_references():
+    components = {
+        "schemas": {
+            "Address": {"type": "object", "properties": {"city": {"type": "string"}}},
+            "Order": {
+                "type": "object",
+                "properties": {
+                    "billing": {"$ref": "#/components/schemas/Address"},
+                    "shipping": {"$ref": "#/components/schemas/Address"},
+                },
+            },
+        }
+    }
+
+    resolved = parse_components(components)
+    properties = resolved["schemas"]["Order"]["properties"]
+    assert properties["billing"] == properties["shipping"] == components["schemas"]["Address"]
+    # Cached results are copied, so each property can be modified independently
+    assert properties["billing"] is not properties["shipping"]
+
+
+def test_parse_components_drops_unresolvable_references():
+    components = {"schemas": {"Alias": {"$ref": "#/components/schemas/Missing"}}}
+    assert parse_components(components) == {"schemas": {}, "parameters": {}}

@@ -14,12 +14,17 @@ authors = [
 keywords = ["swagger", "openapi", "wapiti", "parser"]
 classifiers = [
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
     "Operating System :: OS Independent",
     "Topic :: Software Development :: Libraries",
     "Topic :: Internet :: WWW/HTTP",
 ]
 dependencies = ["PyYAML>=6.0"]
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 
 [project.optional-dependencies]
 dev = [
