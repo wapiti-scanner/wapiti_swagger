@@ -69,6 +69,12 @@ lint:
 	@echo "--- Linting code ---"
 	pylint wapiti_swagger tests
 
+# Clean Python build and test artifacts
+clean:
+	@echo "--- Cleaning build and test artifacts ---"
+	rm -rf dist .pytest_cache .coverage
+	find . -name __pycache__ -type d -not -path './.git/*' -prune -exec rm -rf {} +
+
 # Clean everything, including packaging artifacts
 clean-all: clean
 	@echo "--- Cleaning all packaging artifacts ---"
