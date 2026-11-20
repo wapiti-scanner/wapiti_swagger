@@ -62,19 +62,14 @@ class ParsedSwagger:
         urls = []
 
         # Swagger 2.0: Combine schemes, host, and basePath
-        if self.metadata:
-            host = self.metadata.get("host")
+        host = self.metadata.get("host")
+        if host:
             base_path = self.metadata.get("basePath", "").rstrip("/")
             # Default to http if schemes not provided
-            schemes = self.metadata.get("schemes", ["http"])
+            for scheme in self.metadata.get("schemes", ["http"]):
+                urls.append(f"{scheme}://{host}{base_path}")
 
-            if host:
-                for scheme in schemes:
-                    urls.append(f"{scheme}://{host}{base_path}")
-
-            # OpenAPI 3.x: Use servers directly
-            servers = self.metadata.get("servers")
-            if servers:
-                urls.extend(servers)
+        # OpenAPI 3.x: Use servers directly
+        urls.extend(self.metadata.get("servers", []))
 
         return [url for url in urls if url.strip()]
