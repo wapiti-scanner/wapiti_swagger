@@ -1,5 +1,5 @@
 Name:           wapiti_swagger
-Version:        0.1.9
+Version:        0.2.0
 Release:        1%{?dist}
 Summary:        Python library designed to parse Swagger (OpenAPI) specifications
 
@@ -27,7 +27,7 @@ The Wapiti Swagger Parser is a Python library designed to parse Swagger (OpenAPI
 %install
 rm -rf %{buildroot}
 # Installer le wheel sans ses dépendances
-pip3 install --no-deps --root %{buildroot} --prefix /usr %{_sourcedir}/wapiti_swagger-0.1.9-py3-none-any.whl
+pip3 install --no-deps --root %{buildroot} --prefix /usr %{_sourcedir}/wapiti_swagger-0.2.0-py3-none-any.whl
 
 %files
 %license LICENSE
@@ -35,6 +35,10 @@ pip3 install --no-deps --root %{buildroot} --prefix /usr %{_sourcedir}/wapiti_sw
 %{python3_sitelib}/wapiti_swagger*
 
 %changelog
+* Fri Nov 20 2026 Nicolas Surribas <nicolas.surribas@gmail.com> - 0.2.0
+- Split the parser in several modules, simplify resolve_schema and generate_request_body_from_schema signatures
+- Follow references to reusable parameters and request bodies (OpenAPI 3.x)
+
 * Mon Oct 06 2025 Nicolas Surribas <nicolas.surribas@gmail.com> - 0.1.9
 - Initial RPM packaging
 

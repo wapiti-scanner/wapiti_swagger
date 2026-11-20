@@ -28,6 +28,10 @@ The library is lightweight, relying only on Python's built-in `json` library and
 
 - **Request Extraction**:
   - Parses all HTTP requests (methods, paths, parameters) defined in the Swagger file.
+- **Reusable Parameters and Request Bodies**:
+  - Follows the `$ref` of parameters (`#/parameters/...`, `#/components/parameters/...`) and request bodies (`#/components/requestBodies/...`) defined once and shared by several operations.
+  - Parameters defined on a path apply to all its operations, an operation can override them.
+  - References to another file are not followed.
 - **Schema Handling**:
   - Resolves `$ref` references in schemas, including handling circular references gracefully.
 - **Custom Types**:
@@ -66,6 +70,19 @@ print("Example request body:", request_body)
 ## **Why Use This Library?**
 
 Unlike general-purpose OpenAPI parsers, this library is optimized for specific use cases like generating valid requests for API testing, scanning, or mocking. It is lightweight, customizable, and avoids unnecessary processing of response definitions or additional metadata unrelated to request generation.
+
+---
+
+## **Code Organization**
+
+| Module | Role |
+|---|---|
+| `wapiti_swagger.parser` | Reads the file and extracts the requests, their parameters and the metadata. |
+| `wapiti_swagger.components` | Resolves the `$ref` references of the reusable schemas and parameters. |
+| `wapiti_swagger.examples` | Generates example values (request bodies) from schemas. |
+| `wapiti_swagger.models` | Classes holding the result: `ParsedSwagger`, `SwaggerRequest`, `Parameter`. |
+
+Every function documented below can be imported from `wapiti_swagger.parser`.
 
 ---
 
@@ -130,16 +147,15 @@ Resolves and preprocesses all components (e.g., schemas, parameters) from the `c
 
 ---
 
-### 6. `resolve_schema(schema: dict, resolved_components: dict, visited_refs: set) -> dict`  
-Recursively resolves `$ref` references in schemas while avoiding circular references.
+### 6. `resolve_schema(schema: dict, components: dict) -> Optional[dict]`  
+Recursively resolves `$ref` references in a single schema while avoiding circular references.
 
 **Parameters:**
 - `schema` (dict): The schema to resolve.
-- `resolved_components` (dict): Preprocessed components for reference resolution.
-- `visited_refs` (set): Tracks references to avoid circular references.
+- `components` (dict): The raw components, references are looked up in their `schemas` section.
 
 **Returns:**
-- `dict`: Fully resolved schema.
+- `Optional[dict]`: Fully resolved schema, or `None` if the schema is a reference that can't be resolved.
 
 ---
 

@@ -2,7 +2,7 @@ import json
 import os
 from tempfile import NamedTemporaryFile
 
-from wapiti_swagger.parser import extract_request_body, parse_components, parse
+from wapiti_swagger.parser import extract_request_body, parse, parse_components, resolve_schema
 
 components_data = {
     "schemas": {
@@ -299,3 +299,24 @@ def test_parse_components_reuses_cached_references():
 def test_parse_components_drops_unresolvable_references():
     components = {"schemas": {"Alias": {"$ref": "#/components/schemas/Missing"}}}
     assert parse_components(components) == {"schemas": {}, "parameters": {}}
+
+
+def test_parse_components_ignores_sections_which_are_not_dictionaries():
+    components = {"schemas": {"Pet": {"type": "string"}}, "x-internal": True}
+    assert parse_components(components) == {"schemas": {"Pet": {"type": "string"}}, "parameters": {}}
+
+
+def test_parse_components_without_schemas_section():
+    # References can't be resolved, but this must not be fatal
+    components = {"parameters": {"limit": {"$ref": "#/components/schemas/Missing"}, "offset": {"name": "offset"}}}
+    assert parse_components(components) == {"schemas": {}, "parameters": {"offset": {"name": "offset"}}}
+
+
+def test_resolve_schema():
+    components = {"schemas": {"Tag": {"type": "string"}}}
+    schema = {"type": "array", "items": {"$ref": "#/components/schemas/Tag"}}
+
+    assert resolve_schema(schema, components) == {"type": "array", "items": {"type": "string"}}
+    assert resolve_schema({"$ref": "#/components/schemas/Missing"}, components) is None
+    # Without components, nothing can be resolved: array items are left untouched
+    assert resolve_schema(schema, {}) == schema

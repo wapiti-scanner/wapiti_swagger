@@ -101,3 +101,14 @@ def test_generate_reuses_same_reference_in_siblings():
 
 def test_generate_unknown_reference_returns_none():
     assert generate_request_body_from_schema({"$ref": "#/components/schemas/Missing"}, NO_COMPONENTS) is None
+
+
+def test_generate_without_schemas_section():
+    assert generate_request_body_from_schema({"$ref": "#/components/schemas/Missing"}, {}) is None
+
+
+def test_generate_tolerates_unusual_schemas():
+    # Empty enum: fall back on the default string
+    assert generate_request_body_from_schema({"type": "string", "enum": []}, NO_COMPONENTS) == "default"
+    # OpenAPI 3.1 list of types is not supported: a placeholder is returned
+    assert generate_request_body_from_schema({"type": ["string", "null"]}, NO_COMPONENTS) == "<['string', 'null']>"
