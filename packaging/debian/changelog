@@ -1,3 +1,10 @@
+wapiti-swagger (0.2.0) unstable; urgency=low
+  * Split the parser in several modules
+  * Follow references to reusable parameters and request bodies (OpenAPI 3.x)
+  * Simplify resolve_schema and generate_request_body_from_schema signatures
+
+ -- Nicolas Surribas <nicolas.surribas@gmail.com>  Fri, 20 Nov 2026 10:00:00 +0100
+
 wapiti-swagger (0.1.9) unstable; urgency=low
   * Initial DEB packaging
 
